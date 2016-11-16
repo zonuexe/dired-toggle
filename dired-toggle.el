@@ -81,6 +81,14 @@
 
 (require 'dired)
 
+(defgroup dired-toggle '()
+  "Toggle dired buffer"
+  :group 'dired
+  :prefix "dired-toggle-")
+
+(defcustom dired-toggle-always-open nil
+  "When non NIL do not close dired window.")
+
 (defvar dired-toggle-buffer-name "*Dired Toggle*"
   "Target buffer name for `dired-toggle'.")
 
@@ -136,9 +144,12 @@
                ;; Some times `dired-toggle-refwin' maybe dired-toggle
                ;; window itself, so just ignore it.
                (not (equal (selected-window) dired-toggle-refwin)))
-          (delete-window dired-toggle-refwin))
-      (dired-find-alternate-file)
-    )))
+          (if dired-toggle-always-open
+              (select-window dired-toggle-refwin)
+            (delete-window dired-toggle-refwin)))
+      (if dired-toggle-always-open
+          (find-file file)
+        (dired-find-alternate-file)))))
 
 (defun dired-toggle-action-up-directory ()
   "Custom up directory action under `dired-toggle-mode'."
